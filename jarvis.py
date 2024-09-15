@@ -6,6 +6,7 @@ import wikipedia
 import pyautogui
 import time
 import pywhatkit
+import webbrowser
 
 # Initialize text-to-speech engine
 engine = pyttsx3.init('sapi5')
@@ -61,6 +62,11 @@ def send_whatsapp_message(phone_number, message):
     speak(f"Sending WhatsApp message to {phone_number}")
     pywhatkit.sendwhatmsg_instantly(phone_number, message)
     speak("Message sent successfully.")
+
+def search_google(query):
+    """Search Google with the given query."""
+    speak("Searching Google")
+    webbrowser.open(f"https://www.google.com/search?q={query}")
 
 
 if __name__ == "__main__":
@@ -127,6 +133,16 @@ if __name__ == "__main__":
                 speak("What message would you like to send?")
                 message = listen_for_command()
                 send_whatsapp_message(phone_number, message)
+
+
+
+# =================================================================
+# Google Search
+# =================================================================
+            elif 'google' in query:
+                query = query.replace("google", "").replace("jarvis", "").strip()
+                search_google(query)
+            
 
 # =================================================================
 # App Management
