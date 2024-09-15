@@ -5,6 +5,7 @@ import os
 import wikipedia
 import pyautogui
 import time
+import pywhatkit
 
 # Initialize text-to-speech engine
 engine = pyttsx3.init('sapi5')
@@ -95,6 +96,16 @@ if __name__ == "__main__":
                 query = query.replace('type', '').strip()
                 speak("Typing now")
                 pyautogui.write(query)
+
+# =================================================================
+# Youtube
+# =================================================================
+            elif 'play' in query: 
+                speak("Playing on YouTube")
+                pywhatkit.playonyt(query)
+
+
+
 
 # =================================================================
 # App Management
