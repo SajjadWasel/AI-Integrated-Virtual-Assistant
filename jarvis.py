@@ -54,6 +54,15 @@ def wish_user():
     print(greeting)
     speak(greeting)
 
+
+
+def send_whatsapp_message(phone_number, message):
+    """Send WhatsApp message to the given phone number."""
+    speak(f"Sending WhatsApp message to {phone_number}")
+    pywhatkit.sendwhatmsg_instantly(phone_number, message)
+    speak("Message sent successfully.")
+
+
 if __name__ == "__main__":
     wish_user()
 
@@ -106,6 +115,18 @@ if __name__ == "__main__":
 
 
 
+
+
+# =================================================================
+# Whatsapp
+# =================================================================
+
+            elif 'whatsapp' in query:  
+                speak("To whom should I send the message?")
+                phone_number = "+88" + listen_for_command()
+                speak("What message would you like to send?")
+                message = listen_for_command()
+                send_whatsapp_message(phone_number, message)
 
 # =================================================================
 # App Management
