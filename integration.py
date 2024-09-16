@@ -70,13 +70,13 @@ def wish_user():
     """Greet the user based on the time of day."""
     hour = int(datetime.datetime.now().hour)
     if 0 <= hour < 12:
-        greeting = "Good Morning sir! How can I assist you?"
+        greeting = "Good Morning sir!"
     elif 12 <= hour < 17:
-        greeting = "Good Afternoon sir! How can I assist you?"
+        greeting = "Good Afternoon sir!"
     elif 17 <= hour < 21:
-        greeting = "Good Evening sir! How can I assist you?"
+        greeting = "Good Evening sir!"
     else:
-        greeting = "Good Night sir! How can I assist you?"
+        greeting = "Good Night sir!"
     print(greeting)
     speak(greeting)
 
@@ -91,6 +91,134 @@ def search_google(query):
     speak("Searching Google")
     webbrowser.open(f"https://www.google.com/search?q={query}")
 
+def handle_jarvis_commands(query):
+    """Handle all Jarvis-related commands."""
+    if 'time' in query:
+        strTime = datetime.datetime.now().strftime("%H:%M:%S")
+        print(f"Current time: {strTime}")
+        speak(f"Sir, the time is {strTime}")
+
+    elif 'wikipedia' in query:
+        speak("Searching Wikipedia sir")
+        try:
+            query = query.replace("wikipedia", "").strip()
+            results = wikipedia.summary(query, sentences=2)
+            print(f"Results: {results}")
+            speak("According to Wikipedia")
+            speak(results)
+        except wikipedia.exceptions.DisambiguationError as e:
+            speak("There are multiple results. Please be more specific.")
+            print(f"Disambiguation Error: {e}")
+        except wikipedia.exceptions.PageError:
+            speak("No results found on Wikipedia sir.")
+            print("No results found on Wikipedia sir.")
+
+    elif 'type' in query:
+        query = query.replace('type', '').strip()
+        speak("Typing now")
+        pyautogui.write(query)
+
+    elif 'play' in query:
+        speak("Playing on YouTube")
+        pywhatkit.playonyt(query)
+
+    elif 'whatsapp' in query:
+        speak("To whom should I send the message?")
+        phone_number = "+88" + listen_for_command()
+        speak("What message would you like to send?")
+        message = listen_for_command()
+        send_whatsapp_message(phone_number, message)
+
+    elif 'google' in query:
+        query = query.replace("google", "").replace("jarvis", "").strip()
+        search_google(query)
+
+    elif 'close' in query:
+        speak("Closing sir")
+        pyautogui.hotkey('alt', 'f4')
+
+    elif 'minimise' in query:
+        speak("Minimizing sir")
+        pyautogui.hotkey('alt', 'space')
+        pyautogui.press('n')
+
+    elif 'reopen it' in query:
+        speak("Opening Minimized tab sir")
+        pyautogui.hotkey('alt', 'tab')
+
+    elif 'open' in query:
+        query = query.replace("open", "").strip()
+        speak(f"Opening {query} sir")
+        pyautogui.press("super")
+        pyautogui.typewrite(query)
+        pyautogui.press("enter")
+
+    elif 'presentation' in query:
+        topic = query.split("presentation", 1)[1].strip().replace('about', '').replace('on', '').replace('slide', '')
+        pyautogui.press("win")
+        time.sleep(2)
+        pyautogui.write('google chrome')
+        time.sleep(2)
+        pyautogui.press('enter') 
+        time.sleep(2)
+        pyautogui.write('https://gamma.app/')
+        pyautogui.press('enter')
+        time.sleep(0.5)
+        pyautogui.press('f11')
+        time.sleep(7)
+        pyautogui.click(x=400, y=80)
+        time.sleep(6)
+        pyautogui.click(x=580, y=500)
+        time.sleep(4)
+        pyautogui.click(x=580, y=407)
+        time.sleep(3)
+        pyautogui.write(topic)
+        time.sleep(4)
+        pyautogui.click(x=380, y=350)
+        time.sleep(4)
+        pyautogui.click(x=500, y=210)
+        time.sleep(3)
+        pyautogui.click(x=770, y=480)
+        time.sleep(4)
+        pyautogui.click(x=750, y=730)
+        time.sleep(5)
+        pyautogui.click(x=1200, y=650)
+        time.sleep(6)
+        pyautogui.click(x=1200, y=130)
+        time.sleep(10)
+        pyautogui.click(x=1280, y=130)
+        time.sleep(18)
+        pyautogui.click(x=1080, y=28)
+        speak(f"Your job is done sir! I created a presentation on {topic}. Just have a look at it")
+
+def start_gemini_conversation(query):
+    """Start a conversation with Google Gemini until 'stop the conversation' is spoken."""
+    speak("Starting conversation mode.")
+    
+    while True:
+        query = listen_for_command()
+
+        if 'stop the conversation' in query or "end the conversation" in query:
+            speak("Stopping conversation mode.")
+            break
+        
+        
+
+        if len(query) > 0:
+            if 'who created you' in query or 'when did you born' in query or "who are you" in query or "describe your self" in query:
+                response = convo.send_message("suppose you are an advanced ai assistant created by Sajjad Wassel who is AI and deeplearning enthusiast. Now someone is asking you who created you? now answer accordingly and praise sajjad for creating you")
+            else:
+                response = convo.send_message(query)
+        else:
+            response = convo.send_message("wait I am giving you command")
+            time.sleep(3)
+            print("sleeping....")
+
+        print(f"Jarvis Response: {response.text}")
+        speak(response.text)
+            
+            
+
 if __name__ == "__main__":
     wish_user()
 
@@ -99,110 +227,11 @@ if __name__ == "__main__":
 
         if 'jarvis' in query:
             query = query.replace('jarvis', '').strip()
+            handle_jarvis_commands(query)
 
-            if 'time' in query:
-                strTime = datetime.datetime.now().strftime("%H:%M:%S")
-                print(f"Current time: {strTime}")
-                speak(f"Sir, the time is {strTime}")
+        elif 'conversation mode' in query or "helix" in query:
+            start_gemini_conversation(query)
 
-            elif 'wikipedia' in query:
-                speak("Searching Wikipedia sir")
-                try:
-                    query = query.replace("wikipedia", "").strip()
-                    results = wikipedia.summary(query, sentences=2)
-                    print(f"Results: {results}")
-                    speak("According to Wikipedia")
-                    speak(results)
-                except wikipedia.exceptions.DisambiguationError as e:
-                    speak("There are multiple results. Please be more specific.")
-                    print(f"Disambiguation Error: {e}")
-                except wikipedia.exceptions.PageError:
-                    speak("No results found on Wikipedia sir.")
-                    print("No results found on Wikipedia sir.")
-
-            elif 'type' in query:
-                query = query.replace('type', '').strip()
-                speak("Typing now")
-                pyautogui.write(query)
-
-            elif 'play' in query:
-                speak("Playing on YouTube")
-                pywhatkit.playonyt(query)
-
-            elif 'whatsapp' in query:
-                speak("To whom should I send the message?")
-                phone_number = "+88" + listen_for_command()
-                speak("What message would you like to send?")
-                message = listen_for_command()
-                send_whatsapp_message(phone_number, message)
-
-            elif 'google' in query:
-                query = query.replace("google", "").replace("jarvis", "").strip()
-                search_google(query)
-
-            elif 'close' in query:
-                speak("Closing sir")
-                pyautogui.hotkey('alt', 'f4')
-
-            elif 'minimise' in query:
-                speak("Minimizing sir")
-                pyautogui.hotkey('alt', 'space')
-                pyautogui.press('n')
-
-            elif 'reopen it' in query:
-                speak("Opening Minimized tab sir")
-                pyautogui.hotkey('alt', 'tab')
-
-            elif 'open' in query:
-                query = query.replace("open", "").strip()
-                speak(f"Opening {query} sir")
-                pyautogui.press("super")
-                pyautogui.typewrite(query)
-                pyautogui.press("enter")
-
-            elif 'presentation' in query:
-                topic = query.split("presentation", 1)[1].strip().replace('about', '').replace('on', '').replace('slide', '')
-                pyautogui.press("win")
-                time.sleep(2)
-                pyautogui.write('google chrome')
-                time.sleep(2)
-                pyautogui.press('enter') 
-                time.sleep(2)
-                pyautogui.write('https://gamma.app/')
-                pyautogui.press('enter')
-                time.sleep(0.5)
-                pyautogui.press('f11')
-                time.sleep(7)
-                pyautogui.click(x=400, y=80)
-                time.sleep(6)
-                pyautogui.click(x=580, y=500)
-                time.sleep(4)
-                pyautogui.click(x=580, y=407)
-                time.sleep(3)
-                pyautogui.write(topic)
-                time.sleep(4)
-                pyautogui.click(x=380, y=350)
-                time.sleep(4)
-                pyautogui.click(x=500, y=210)
-                time.sleep(3)
-                pyautogui.click(x=770, y=480)
-                time.sleep(4)
-                pyautogui.click(x=750, y=730)
-                time.sleep(5)
-                pyautogui.click(x=1200, y=650)
-                time.sleep(6)
-                pyautogui.click(x=1200, y=130)
-                time.sleep(10)
-                pyautogui.click(x=1280, y=130)
-                time.sleep(18)
-                pyautogui.click(x=1080, y=28)
-                speak(f"Your job is done sir! I created a presentation on {topic}. Just have a look at it")
-
-            elif 'stop' in query:
-                speak("Goodbye sir! Have a nice day.")
-                break
-
-            elif "conversation" in query or "mode" in query:
-                response = convo.send_message(query)
-                print(f"Gemini response: {response.text}")
-                speak(response.text)
+        elif 'stop' in query or "go to sleep" or "jarvis go to sleep":
+            speak("Goodbye sir! Have a nice day. We will meet soon")
+            break
