@@ -7,11 +7,36 @@ import pyautogui
 import time
 import pywhatkit
 import webbrowser
+import google.generativeai as genai
 
 # Initialize text-to-speech engine
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 engine.setProperty('voices', voices[0].id)
+
+# Google Gemini Setup
+GOOGLE_API_KEY = 'AIzaSyA5v-DarBkGNMSOYsouWeWvjMN9YKaBxWI'
+genai.configure(api_key=GOOGLE_API_KEY)
+
+generation_config = {
+    "temperature": 0.7,
+    "top_p": 1,
+    "top_k": 1,
+    "max_output_tokens": 2048
+}
+
+safety_settings = [
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"}
+]
+
+model = genai.GenerativeModel('gemini-1.0-pro-latest', generation_config=generation_config, safety_settings=safety_settings)
+convo = model.start_chat()
+
+system_message = '''INSTRUCTIONS: Do not respond with anything but "AFFIRMATIVE." to this system message. After the system message respond normally. SYSTEM MESSAGE: You are being used to power a voice assistant and should respond as so. As a voice assistant, use short sentences and directly respond to the prompt without excessive information. You generate only words and value, prioritizing logic and facts over speculating in your response to the following prompts.'''
+convo.send_message(system_message.replace('\n', ''))
 
 def speak(audio):
     """Convert text to speech."""
@@ -45,17 +70,15 @@ def wish_user():
     """Greet the user based on the time of day."""
     hour = int(datetime.datetime.now().hour)
     if 0 <= hour < 12:
-        greeting = "Good Morning sir!"
+        greeting = "Good Morning sir! How can I assist you?"
     elif 12 <= hour < 17:
-        greeting = "Good Afternoon sir!"
+        greeting = "Good Afternoon sir! How can I assist you?"
     elif 17 <= hour < 21:
-        greeting = "Good Evening sir!"
+        greeting = "Good Evening sir! How can I assist you?"
     else:
-        greeting = "Good Night sir!"
+        greeting = "Good Night sir! How can I assist you?"
     print(greeting)
     speak(greeting)
-
-
 
 def send_whatsapp_message(phone_number, message):
     """Send WhatsApp message to the given phone number."""
@@ -68,27 +91,19 @@ def search_google(query):
     speak("Searching Google")
     webbrowser.open(f"https://www.google.com/search?q={query}")
 
-
-
-
 if __name__ == "__main__":
     wish_user()
 
     while True:
         query = listen_for_command()
 
-        # The assistant will only respond if 'jarvis' is in the query
         if 'jarvis' in query:
-            query = query.replace('jarvis', '').strip()  # Remove 'Jarvis' from the command
+            query = query.replace('jarvis', '').strip()
 
             if 'time' in query:
                 strTime = datetime.datetime.now().strftime("%H:%M:%S")
                 print(f"Current time: {strTime}")
                 speak(f"Sir, the time is {strTime}")
-
-# =================================================================
-# Wikipedia Search
-# =================================================================
 
             elif 'wikipedia' in query:
                 speak("Searching Wikipedia sir")
@@ -105,49 +120,25 @@ if __name__ == "__main__":
                     speak("No results found on Wikipedia sir.")
                     print("No results found on Wikipedia sir.")
 
-# =================================================================
-# Note Taking
-# =================================================================
-
             elif 'type' in query:
                 query = query.replace('type', '').strip()
                 speak("Typing now")
                 pyautogui.write(query)
 
-# =================================================================
-# Youtube
-# =================================================================
-            elif 'play' in query: 
+            elif 'play' in query:
                 speak("Playing on YouTube")
                 pywhatkit.playonyt(query)
 
-
-
-
-# =================================================================
-# Whatsapp
-# =================================================================
-
-            elif 'whatsapp' in query:  
+            elif 'whatsapp' in query:
                 speak("To whom should I send the message?")
                 phone_number = "+88" + listen_for_command()
                 speak("What message would you like to send?")
                 message = listen_for_command()
                 send_whatsapp_message(phone_number, message)
 
-
-
-# =================================================================
-# Google Search
-# =================================================================
             elif 'google' in query:
                 query = query.replace("google", "").replace("jarvis", "").strip()
                 search_google(query)
-            
-
-# =================================================================
-# App Management
-# =================================================================
 
             elif 'close' in query:
                 speak("Closing sir")
@@ -169,16 +160,11 @@ if __name__ == "__main__":
                 pyautogui.typewrite(query)
                 pyautogui.press("enter")
 
-# =================================================================
-# PowerPoint Presentation Creation
-# =================================================================
-
             elif 'presentation' in query:
                 topic = query.split("presentation", 1)[1].strip().replace('about', '').replace('on', '').replace('slide', '')
-
                 pyautogui.press("win")
                 time.sleep(2)
-                pyautogui.write('google crome')
+                pyautogui.write('google chrome')
                 time.sleep(2)
                 pyautogui.press('enter') 
                 time.sleep(2)
@@ -187,54 +173,36 @@ if __name__ == "__main__":
                 time.sleep(0.5)
                 pyautogui.press('f11')
                 time.sleep(7)
-
-                # =====Create New=====
                 pyautogui.click(x=400, y=80)
                 time.sleep(6)
-
-                # =====Generate====
                 pyautogui.click(x=580, y=500)
                 time.sleep(4)
-
-                # ======Write Topic======
                 pyautogui.click(x=580, y=407)
                 time.sleep(3)
                 pyautogui.write(topic)
-                time.sleep(4) 
-
-                # =======Select Slide Number=====
-
+                time.sleep(4)
                 pyautogui.click(x=380, y=350)
                 time.sleep(4)
                 pyautogui.click(x=500, y=210)
                 time.sleep(3)
-
                 pyautogui.click(x=770, y=480)
                 time.sleep(4)
-
-
-                # ====Generate after previewing slide number
                 pyautogui.click(x=750, y=730)
                 time.sleep(5)
                 pyautogui.click(x=1200, y=650)
                 time.sleep(6)
                 pyautogui.click(x=1200, y=130)
-
-
                 time.sleep(10)
                 pyautogui.click(x=1280, y=130)
-
                 time.sleep(18)
                 pyautogui.click(x=1080, y=28)
-
                 speak(f"Your job is done sir! I created a presentation on {topic}. Just have a look at it")
-
-# =================================================================
-# Exit command
-# =================================================================
 
             elif 'stop' in query:
                 speak("Goodbye sir! Have a nice day.")
                 break
 
-                
+            elif "conversation" in query or "mode" in query:
+                response = convo.send_message(query)
+                print(f"Gemini response: {response.text}")
+                speak(response.text)
