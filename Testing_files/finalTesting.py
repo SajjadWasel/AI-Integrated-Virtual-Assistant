@@ -69,6 +69,8 @@ def search_google(query):
     webbrowser.open(f"https://www.google.com/search?q={query}")
 
 
+
+
 if __name__ == "__main__":
     wish_user()
 
@@ -118,7 +120,6 @@ if __name__ == "__main__":
             elif 'play' in query: 
                 speak("Playing on YouTube")
                 pywhatkit.playonyt(query)
-
 
 
 
