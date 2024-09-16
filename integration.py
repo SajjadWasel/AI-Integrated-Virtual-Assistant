@@ -146,6 +146,10 @@ def handle_jarvis_commands(query):
         speak("Opening Minimized tab sir")
         pyautogui.hotkey('alt', 'tab')
 
+    elif 'close the tab' in query:
+        speak("Closing tab sir")
+        pyautogui.hotkey('ctrl', 'w')
+
     elif 'open' in query:
         query = query.replace("open", "").strip()
         speak(f"Opening {query} sir")
@@ -198,7 +202,7 @@ def start_gemini_conversation(query):
     while True:
         query = listen_for_command()
 
-        if 'stop the conversation' in query or "end the conversation" in query:
+        if 'stop the conversation' in query or "end the conversation" in query or "and the conversation" in query:
             speak("Stopping conversation mode.")
             break
         
@@ -208,7 +212,9 @@ def start_gemini_conversation(query):
             if 'who created you' in query or 'when did you born' in query or "who are you" in query or "describe your self" in query:
                 response = convo.send_message("suppose you are an advanced ai assistant created by Sajjad Wassel who is AI and deeplearning enthusiast. Now someone is asking you who created you? now answer accordingly and praise sajjad for creating you")
             else:
-                response = convo.send_message(query)
+                command = query.replace('helix', '')
+                command = query.replace('jarvis', '')
+                response = convo.send_message(command)
         else:
             response = convo.send_message("wait I am giving you command")
             time.sleep(3)
