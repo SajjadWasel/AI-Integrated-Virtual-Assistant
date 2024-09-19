@@ -118,6 +118,11 @@ def handle_jarvis_commands(query):
         speak("Typing now")
         pyautogui.write(query)
 
+    elif 'enter' in query:
+        pyautogui.press('enter')
+        speak("Pressed enter")
+        
+
     elif 'play' in query:
         speak("Playing on YouTube")
         pywhatkit.playonyt(query)
@@ -142,7 +147,7 @@ def handle_jarvis_commands(query):
         pyautogui.hotkey('alt', 'space')
         pyautogui.press('n')
 
-    elif 'reopen it' in query:
+    elif 'go to vs code' in query:
         speak("Opening Minimized tab sir")
         pyautogui.hotkey('alt', 'tab')
 
@@ -151,10 +156,12 @@ def handle_jarvis_commands(query):
         pyautogui.hotkey('ctrl', 'w')
 
     elif 'open' in query:
-        query = query.replace("open", "").strip()
+        query = query.replace("open", "")
+        query = query.replace("jarvis", "")
         speak(f"Opening {query} sir")
-        pyautogui.press("super")
+        pyautogui.press("win")
         pyautogui.typewrite(query)
+        time.sleep(2)
         pyautogui.press("enter")
 
     elif 'presentation' in query:
