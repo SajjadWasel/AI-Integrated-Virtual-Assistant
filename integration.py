@@ -15,7 +15,7 @@ voices = engine.getProperty('voices')
 engine.setProperty('voices', voices[0].id)
 
 # Google Gemini Setup
-GOOGLE_API_KEY = 'AIzaSyA5v-DarBkGNMSOYsouWeWvjMN9YKaBxWI'
+GOOGLE_API_KEY = 'Your_API_Key'
 genai.configure(api_key=GOOGLE_API_KEY)
 
 generation_config = {
